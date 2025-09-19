@@ -7,7 +7,7 @@ PLANE_URDF = os.path.join(pybullet_data.getDataPath(), "plane.urdf")
 REPO       = os.path.abspath(os.path.dirname(__file__))
 URDF_DIR   = os.path.join(REPO, "urdf")
 MESHES_DIR = os.path.join(REPO, "meshes")
-UR5_URDF   = os.path.join(URDF_DIR, "ur5_suction2.urdf")
+UR5_URDF   = os.path.join(URDF_DIR, "ur5_suction.urdf")
 
 
 TIMESTEP   = 1.0/1000.0      # 1 kHz fixed step
