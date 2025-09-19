@@ -19,6 +19,20 @@ KP         = 0.55
 KV         = 1.0
 
 
+# ---------- Conveyor settings ----------
+# Center of belt (x,y,z), z is the *center* height of the belt body
+BELT_CENTER = (0.55, 0.32, 0.015)    # near where you were staging the box
+BELT_SIZE   = (0.50, 0.20, 0.03)     # Lx, Ly, thickness
+
+# Direction the belt moves boxes (unit-ish in XY). (-1,0) = push toward -X.
+BELT_DIR    = (-1.0, 0.0)
+BELT_SPEED  = 0.25                   # m/s along BELT_DIR
+
+# Where you want the box to stop for picking (XY only)
+PICKUP_XY   = (0.35, 0.32)
+
+
+
 # With suction_tcp as the actual EE link, no offset needed.
 TCP_OFFSET = [0.0, 0.0, 0.0]
 DOWN       = p.getQuaternionFromEuler([math.pi, 0.0, 0.0])

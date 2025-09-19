@@ -130,11 +130,37 @@ def main():
     ee  = ee_link_index(ur5_id)       # suction_tcp
     arm = arm_joint_indices(ur5_id)
 
-    # Incoming box at staging area (dynamic)
+    # --- Conveyor belt + incoming box on belt ---
     incoming_box_size = bin_state["incoming"]["size"]
-    incoming_box_position = [0.42, 0.32, incoming_box_size[2]/2]
+
+    # 1) Build the belt and set its drive direction from config
+    belt = setup.create_conveyor(config.BELT_CENTER, config.BELT_SIZE)
+    belt["dir"] = np.array([config.BELT_DIR[0], config.BELT_DIR[1], 0.0], dtype=float)
+
+    # 2) Drop the box at the "upstream" edge (opposite of motion)
+    L, W, H = config.BELT_SIZE
+    cx, cy, cz = config.BELT_CENTER
+    top_z = setup.belt_top_z(belt)
+
+    # place near the upstream edge (a little inset so it doesn't start intersecting)
+    edge_inset = 0.02
+    start_x = cx + (L / 2 - edge_inset) * (-config.BELT_DIR[0])  # opposite of motion
+    start_y = cy + (W / 2 - edge_inset) * (-config.BELT_DIR[1]) if abs(config.BELT_DIR[1]) > 0 else cy
+
+    incoming_box_position = [start_x, start_y, top_z + incoming_box_size[2] / 2.0]
     incoming_box_id = setup.setup_box(incoming_box_size, incoming_box_position)
 
+    # 3) Drive the belt until the box reaches the pickup XY, then stop its motion
+    for _ in range(2000):
+        setup.step_conveyor(belt, config.BELT_SPEED)
+        p.stepSimulation()
+        if config.SPEEDUP > 0:
+            time.sleep(config.TIMESTEP / config.SPEEDUP)
+        px, py, pz = p.getBasePositionAndOrientation(incoming_box_id)[0]
+        if (px - config.PICKUP_XY[0]) ** 2 + (py - config.PICKUP_XY[1]) ** 2 < (0.02 ** 2):
+            # kill residual motion
+            p.resetBaseVelocity(incoming_box_id, [0, 0, 0], [0, 0, 0])
+            break
 
     # Pick (top-down)
     hover_h = 0.20

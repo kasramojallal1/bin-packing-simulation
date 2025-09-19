@@ -10,6 +10,44 @@ import config
 #     p.resetDebugVisualizerCamera(1, 40, -35, [0.35,0.0,0.25])
 
 
+def create_conveyor(center, size, rgba=(0.25, 0.25, 0.28, 1.0)):
+    """Create a static box that represents the conveyor deck."""
+    L, W, H = size
+    col = p.createCollisionShape(p.GEOM_BOX, halfExtents=[L/2, W/2, H/2])
+    vis = p.createVisualShape(p.GEOM_BOX, halfExtents=[L/2, W/2, H/2], rgbaColor=rgba)
+    belt_id = p.createMultiBody(baseMass=0, baseCollisionShapeIndex=col,
+                                baseVisualShapeIndex=vis, basePosition=list(center))
+    p.changeDynamics(belt_id, -1, lateralFriction=0.8, restitution=0.0)
+    return {"id": belt_id, "center": list(center), "size": list(size), "dir": np.array([1.0, 0.0, 0.0])}
+
+
+def belt_top_z(belt):
+    """Return the Z height of the belt's top surface."""
+    return belt["center"][2] + belt["size"][2] / 2.0
+
+
+def step_conveyor(belt, speed):
+    """
+    Simple 'virtual conveyor': for any body in contact with the belt,
+    inject a horizontal linear velocity along belt['dir'] * speed.
+    """
+    v2 = np.array(belt["dir"][:2], dtype=float)
+    n = np.linalg.norm(v2) + 1e-9
+    v2 = v2 / n
+    vx, vy = float(v2[0] * speed), float(v2[1] * speed)
+
+    # all current contacts with the belt
+    cps = p.getContactPoints(bodyA=belt["id"])
+    for cp in cps:
+        bodyB = cp[2]  # other body
+        if bodyB < 0:
+            continue
+        lin, ang = p.getBaseVelocity(bodyB)
+        # preserve vertical speed, push in-plane
+        p.resetBaseVelocity(bodyB, [vx, vy, lin[2]], ang)
+
+
+
 def setup_visuals():
     # Hide the whole GUI chrome (Explorer/Params/status bar)
     p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
