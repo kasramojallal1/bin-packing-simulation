@@ -60,7 +60,7 @@ def setup_visuals():
     # (optional) if you created any user debug sliders/text, clear them:
     # p.removeAllUserDebugItems()
 
-    p.resetDebugVisualizerCamera(1, 50, -35, [0.45, -0.10, 0.15])
+    p.resetDebugVisualizerCamera(1, 50, -35, [0.25, -0.10, 0.15])
 
     p.setGravity(0, 0, -30.81)
     p.setRealTimeSimulation(10)  # <- syncs physics to wall time
@@ -101,6 +101,7 @@ def make_demo_state_and_instruction():
     placed = [
         {"id":"p0", "pos":[0.00, 0.00, 0.00], "size":[0.10, 0.10, 0.10]},
         {"id":"p1", "pos":[0.10, 0.00, 0.00], "size":[0.10, 0.10, 0.10]},
+        {"id": "p2", "pos": [0.00, 0.10, 0.00], "size": [0.10, 0.10, 0.10]},
     ]
     incoming = {"size":[0.10, 0.10, 0.10]}
     anchors = [{"id":"r0_a0", "pos":[0.10, 0.10, 0.00], "surface":"floor"}]
@@ -108,7 +109,7 @@ def make_demo_state_and_instruction():
         "rotation_index": 0,
         "anchor_id": "r0_a0",
         "path": [
-            [0.005, 0.105, 0.10]
+            [0.105, 0.105, 0.101]
         ]
     }
     state = {"bin":bin_xyz, "placed":placed, "anchors":anchors, "incoming":incoming}

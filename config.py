@@ -39,5 +39,5 @@ DOWN       = p.getQuaternionFromEuler([math.pi, 0.0, 0.0])
 
 
 bin_center_xy = (0.50, -0.40)
-bin_inner = (0.40, 0.30)
+bin_inner = (0.350, 0.250)
 bin_height = 0.20
